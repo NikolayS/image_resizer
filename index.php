@@ -33,10 +33,18 @@ try {
     $w = imagesx($img);
     $h = imagesy($img);
 
+    $resize = null;
     if (isset($_GET['w']) && ($resW = intval($_GET['w'])) && $resW > 0) { // resize, target: WIDTH
         $resH = round($resW * $h / $w);
+        $resize = true;
+    }
+    if (isset($_GET['h']) && ($resH = intval($_GET['h'])) && $resH > 0) { // resize, target: HEIGHT
+        $resW = round($resH * $w / $h);
+        $resize = true;
+    }
+    if ($resize) {
         $resImg = imagecreatetruecolor($resW, $resH);
-        if (in_array(strtolower($headers['content-type']), array('image/png', 'image/gif'))) { // tricks to preserve PNG's transparency
+        if (in_array(strtolower($headers['content-type']), array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
             imagealphablending($resImg, false);
             imagesavealpha($resImg, true);
             $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 127);
