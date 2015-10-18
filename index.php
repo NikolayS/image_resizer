@@ -1,5 +1,5 @@
 <?php
-define("DEBUG", 1);
+//define("DEBUG", 1);
 
 set_error_handler(function ($severity, $message, $filepath, $line) {
     throw new Exception($message . " in $filepath, line $line");
@@ -20,15 +20,14 @@ try {
 
     if (isset($_GET['w']) && ($resW = intval($_GET['w'])) && $resW > 0) { // resize, target: WIDTH
         $resH = round($resW * $h / $w);
-        //die("rd: $resW x $resH, orig: $width x $height");
         $resImg = imagecreatetruecolor($resW, $resH);
         imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
-        //imagecopyresized (
+    } else {
+        $resImg = $img;
     }
     
     if (@$headers['content-length'] > 0 && strpos(@$headers['content-type'], "Image") == 0) {
         header("Content-type: {$headers['content-type']}");
-        //echo $data;
         imagejpeg($resImg, NULL, 80);
     }
 } catch (Exception $e) {
