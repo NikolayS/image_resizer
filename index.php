@@ -24,7 +24,6 @@ try {
     }
     $data = file_get_contents($src);
     $headers = parseHeaders($http_response_header);
-    print_r($headers);die;
 
     if (!isset($headers['content-type']) || !in_array(strtolower($headers['content-type']), $SUPPORTED_TYPES)) {
         throw new Exception("Either the file is not an image or its type is not supported.");
