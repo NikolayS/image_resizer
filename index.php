@@ -32,32 +32,30 @@ try {
 
     $resImg = null;
 
-    if (@$headers['content-length'] > 0 && strpos($contentType, "image") === 0) {
-        $img = imagecreatefromstring($data);
-        $w = imagesx($img);
-        $h = imagesy($img);
+    $img = imagecreatefromstring($data);
+    $w = imagesx($img);
+    $h = imagesy($img);
 
-        $resize = null;
-        if (isset($_GET['w']) && ($resW = intval($_GET['w'])) && $resW > 0) { // resize, target: WIDTH
-            $resH = round($resW * $h / $w);
-            $resize = true;
+    $resize = null;
+    if (isset($_GET['w']) && ($resW = intval($_GET['w'])) && $resW > 0) { // resize, target: WIDTH
+        $resH = round($resW * $h / $w);
+        $resize = true;
+    }
+    if (isset($_GET['h']) && ($resH = intval($_GET['h'])) && $resH > 0) { // resize, target: HEIGHT
+        $resW = round($resH * $w / $h);
+        $resize = true;
+    }
+    if ($resize) {
+        $resImg = imagecreatetruecolor($resW, $resH);
+        if (in_array($contentType, array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
+            imagealphablending($resImg, false);
+            imagesavealpha($resImg, true);
+            $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 1);
+            imagefilledrectangle($resImg, 0, 0, $resW, $resH, $transparent);
         }
-        if (isset($_GET['h']) && ($resH = intval($_GET['h'])) && $resH > 0) { // resize, target: HEIGHT
-            $resW = round($resH * $w / $h);
-            $resize = true;
-        }
-        if ($resize) {
-            $resImg = imagecreatetruecolor($resW, $resH);
-            if (in_array($contentType, array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
-                imagealphablending($resImg, false);
-                imagesavealpha($resImg, true);
-                $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 1);
-                imagefilledrectangle($resImg, 0, 0, $resW, $resH, $transparent);
-            }
-            imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
-        } else {
-            $resImg = $img;
-        }
+        imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
+    } else {
+        $resImg = $img;
     }
 
     if ($resImg) {
