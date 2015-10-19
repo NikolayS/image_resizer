@@ -37,7 +37,8 @@ try {
     $h = imagesy($img);
 
     $resize = null;
-    if (isset($_GET['w']) && ($resW = intval($_GET['w'])) && $resW > 0) { // resize, target: WIDTH
+    if (isset($_GET['w']) && (intval($_GET['w']) > 0)) { // resize, target: WIDTH
+        $resW = intval($_GET['w']);
         $resH = round($resW * $h / $w);
         $resize = true;
     }
