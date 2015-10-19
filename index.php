@@ -41,7 +41,8 @@ try {
         $resH = round($resW * $h / $w);
         $resize = true;
     }
-    if (isset($_GET['h']) && ($resH = intval($_GET['h'])) && $resH > 0) { // resize, target: HEIGHT
+    if (isset($_GET['h']) && (intval($_GET['h']) > 0) && (!isset($resH) || (intval($_GET['h']) < $resH))) { // resize, target: HEIGHT.
+        $resH = intval($_GET['h']);
         $resW = round($resH * $w / $h);
         $resize = true;
     }
