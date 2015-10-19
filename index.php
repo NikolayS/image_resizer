@@ -24,39 +24,44 @@ try {
     }
     $data = file_get_contents($src);
     $headers = parseHeaders($http_response_header);
+    $contentType = strtolower(@$headers['content-type']);
 
-    if (!isset($headers['content-type']) || !in_array(strtolower($headers['content-type']), $SUPPORTED_TYPES)) {
+    if (!$contentType || !in_array($contentType, $SUPPORTED_TYPES)) {
         throw new Exception("Either the file is not an image or its type is not supported.");
     }
 
-    $img = imagecreatefromstring($data);
-    $w = imagesx($img);
-    $h = imagesy($img);
+    $resImg = null;
 
-    $resize = null;
-    if (isset($_GET['w']) && ($resW = intval($_GET['w'])) && $resW > 0) { // resize, target: WIDTH
-        $resH = round($resW * $h / $w);
-        $resize = true;
-    }
-    if (isset($_GET['h']) && ($resH = intval($_GET['h'])) && $resH > 0) { // resize, target: HEIGHT
-        $resW = round($resH * $w / $h);
-        $resize = true;
-    }
-    if ($resize) {
-        $resImg = imagecreatetruecolor($resW, $resH);
-        if (in_array(strtolower($headers['content-type']), array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
-            imagealphablending($resImg, false);
-            imagesavealpha($resImg, true);
-            $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 127);
-            imagefilledrectangle($resImg, 0, 0, $resW, $resH, $transparent);
+    if (@$headers['content-length'] > 0 && strpos($contentType, "image") === 0) {
+        $img = imagecreatefromstring($data);
+        $w = imagesx($img);
+        $h = imagesy($img);
+
+        $resize = null;
+        if (isset($_GET['w']) && ($resW = intval($_GET['w'])) && $resW > 0) { // resize, target: WIDTH
+            $resH = round($resW * $h / $w);
+            $resize = true;
         }
-        imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
-    } else {
-        $resImg = $img;
+        if (isset($_GET['h']) && ($resH = intval($_GET['h'])) && $resH > 0) { // resize, target: HEIGHT
+            $resW = round($resH * $w / $h);
+            $resize = true;
+        }
+        if ($resize) {
+            $resImg = imagecreatetruecolor($resW, $resH);
+            if (in_array($contentType, array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
+                imagealphablending($resImg, false);
+                imagesavealpha($resImg, true);
+                $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 1);
+                imagefilledrectangle($resImg, 0, 0, $resW, $resH, $transparent);
+            }
+            imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
+        } else {
+            $resImg = $img;
+        }
     }
 
-    if (@$headers['content-length'] > 0 && strpos(@$headers['content-type'], "Image") == 0) {
-        switch (strtolower($headers['content-type'])) {
+    if ($resImg) {
+        switch ($contentType) {
         case 'image/jpeg':
             header("Content-Type: image/jpeg");
             imagejpeg($resImg, NULL, 80);
@@ -64,9 +69,11 @@ try {
         case 'image/png':
             header("Content-Type: image/png");
             imagepng($resImg, NULL, 9);
+            break;
         case 'image/gif':
             header("Content-Type: image/gif");
             imagegif($resImg, NULL);
+            break;
         default:
             $err = "Output for Content-Type='{$headers['content-type']}' is not yet implemented";
             header("X-IMAGE-RESIZER-ERROR: $err");
