@@ -1,0 +1,11 @@
+<?php
+// COPY THIS TO config.php:
+//        cp config.local.example.php config.local.php
+// 
+// ..AND EDIT IT AS YOU NEED
+
+$DEBUG = FALSE;                     // do not use TRUE on production!! It might expose show error details to the world
+
+$ALLOW_ABSOLUTE_URLS = TRUE;       // if true, resizing of any URL is allowed, including external one
+$HOST_FOR_URIS = 'mystorage.tbd';   // if relative URL is passed to "src", use this host as a base
+
