@@ -1,5 +1,13 @@
 <?php
-define("DEBUG", 1);
+// 
+// IMAGE RESIZER
+//
+
+if (file_exists("config.local.php")) {
+    require_once("config.local.php");
+} else {
+    trigger_error("Config is missing", E_USER_ERROR); 
+}
 
 if (!extension_loaded('gd') && !extension_loaded('gd2')) {
     trigger_error("GD is not loaded", E_USER_WARNING);
@@ -22,6 +30,15 @@ try {
     if (!$src) {
         throw new Exception("Required parameter is not set: 'src'.");
     }
+
+    $srcParsed = parse_url($src);
+    if (@$srcParsed['host'] && !$ALLOW_ABSOLUTE_URLS) {
+        throw new Exception("Absolute URLs are not allowed.");
+    }
+    if (!@$srcParsed['host']) {
+        $src =  $HOST_FOR_URIS . $src;
+    }
+
     $data = file_get_contents($src);
     $headers = parseHeaders($http_response_header);
     $contentType = strtolower(@$headers['content-type']);
@@ -85,7 +102,7 @@ try {
 } catch (Exception $e) {
     header("Bad request", true, 400);
     header("X-IMAGE-RESIZER-ERROR: " . str_replace(array("\n", "\r"), array(" ", " "), $e->getMessage()));
-    if (defined("DEBUG")) echo $e->getMessage();
+    if ($DEBUG) echo $e->getMessage();
     exit;
 }
 
