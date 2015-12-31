@@ -70,7 +70,7 @@ try {
     }
     $IS_ANIMATED = 0;
     if ($resize) {
-        if ($contentType == 'image/gif' && isAnimatedGif($data)) {
+        if ($contentType == 'image/gif' && $RESIZE_ANIMATED_GIF && isAnimatedGif($data)) {
             $IS_ANIMATED = 1;
             $TMPFILE = '/var/tmp/' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 16);
             file_put_contents($TMPFILE, $data);
