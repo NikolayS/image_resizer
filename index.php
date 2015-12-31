@@ -11,7 +11,11 @@ if (file_exists("config.local.php")) {
 
 if (!extension_loaded('gd') && !extension_loaded('gd2')) {
     trigger_error("GD is not loaded", E_USER_WARNING);
-    return false;
+    exit;
+}
+if ($RESIZE_ANIMATED_GIF && !($_image_magick = exec("which convert"))) {
+    trigger_error("ImageMagic is not loaded, and RESIZE_ANIMATED_GIF is set to TRUE", E_USER_WARNING);
+    exit;
 }
 
 set_error_handler(function ($severity, $message, $filepath, $line) {
@@ -64,21 +68,29 @@ try {
         $resW = round($resH * $w / $h);
         $resize = true;
     }
+    $IS_ANIMATED = 0;
     if ($resize) {
-        $resImg = imagecreatetruecolor($resW, $resH);
-        if (in_array($contentType, array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
-            imagealphablending($resImg, false);
-            imagesavealpha($resImg, true);
-            $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 1);
-            imagefilledrectangle($resImg, 0, 0, $resW, $resH, $transparent);
+        if ($contentType == 'image/gif' && isAnimatedGif($data)) {
+            $IS_ANIMATED = 1;
+            $TMPFILE = '/var/tmp/' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 16);
+            file_put_contents($TMPFILE, $data);
+            resizeAnimatedGif($TMPFILE, $resW, $resH);
+        } else {
+            $resImg = imagecreatetruecolor($resW, $resH);
+            if (in_array($contentType, array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
+                imagealphablending($resImg, false);
+                imagesavealpha($resImg, true);
+                $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 1);
+                imagefilledrectangle($resImg, 0, 0, $resW, $resH, $transparent);
+            }
+            imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
         }
-        imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
     } else {
         $resImg = $img;
     }
 
     header("X-Content-Length-Original: " . strlen($data));
-    if ($resImg) {
+    if ($resImg || $TMPFILE) {
         switch ($contentType) {
         case 'image/jpeg':
             ob_start();
@@ -95,7 +107,14 @@ try {
         case 'image/gif':
             ob_start();
             header("Content-Type: image/gif");
-            imagegif($resImg, NULL);
+            if ($IS_ANIMATED) {
+                $ftmp = fopen($TMPFILE, 'rb');
+                fpassthru($ftmp);
+                fclose($ftmp);
+                deleteFile($TMPFILE);
+            } else {
+                imagegif($resImg, NULL);
+            }
             $outImg = ob_get_clean();
             break;
         default:
@@ -129,4 +148,49 @@ function parseHeaders($headers, $lowerNames = true)
         }
     }
     return $res;
+}
+
+
+/**
+* Using ImageMagick package, resize animated GIF file.
+*
+* @param string $f filename of original image
+* @param integer $width
+* @param integer $height
+* @return string resized file name
+*/
+function resizeAnimatedGif($f, $width, $height, $master = NULL)
+{
+    $_image_magick = exec("which convert");
+    if (!empty($_image_magick)) {
+        if (empty($width) AND empty($height)) {
+            throw new CException('image invalid dimensions');
+        }
+
+        $dim = $width.'x'.$height;
+
+        putenv("MAGICK_THREAD_LIMIT=1");
+        exec(escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f);
+        return $f;
+    }
+}
+
+/**
+* Checking if given gif file (given as binary data) is an animated gif
+*
+* @return boolean
+*/
+function isAnimatedGif($buf)
+{
+    if (strpos($buf, "\x21\xFF\x0B\x4E\x45\x54\x53\x43\x41\x50\x45\x32\x2E\x30" ) !== FALSE) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+function deleteFile($filename)
+{
+    if (file_exists($filename)) {
+        unlink($filename);
+    }
 }
