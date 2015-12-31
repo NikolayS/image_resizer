@@ -17,7 +17,7 @@ Run automated tests:
 ```
 test/run.sh
 ```
-Important: automated tests are only available when `$ALLOW_ABSOLUTE_URLS = TRUE;` in your `config.local.php`'
+Important: automated tests are only available when `$ALLOW_ABSOLUTE_URLS = TRUE;` in your `config.local.php`.
 
 WIP!
 
