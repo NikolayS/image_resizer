@@ -77,19 +77,26 @@ try {
         $resImg = $img;
     }
 
+    header("X-Content-Length-Original: " . strlen($data));
     if ($resImg) {
         switch ($contentType) {
         case 'image/jpeg':
+            ob_start();
             header("Content-Type: image/jpeg");
             imagejpeg($resImg, NULL, 80);
+            $outImg = ob_get_clean();
             break;
         case 'image/png':
+            ob_start();
             header("Content-Type: image/png");
             imagepng($resImg, NULL, 9);
+            $outImg = ob_get_clean();
             break;
         case 'image/gif':
+            ob_start();
             header("Content-Type: image/gif");
             imagegif($resImg, NULL);
+            $outImg = ob_get_clean();
             break;
         default:
             $err = "Output for Content-Type='{$headers['content-type']}' is not yet implemented";
@@ -98,6 +105,8 @@ try {
             unset($err);
             exit;
         }
+        header("Content-Lenght: " . strlen($outImg));
+        echo $outImg;
     }
 } catch (Exception $e) {
     header("Bad request", true, 400);
