@@ -3,7 +3,7 @@ Real-time Image Processing library written in PHP. Supports operations: resize, 
 
 Requirements
 ===
-Main library being used: **gd2**. Resizing animated GIFs is done using **ImageMagick**.
+Main library being used: **gd2**. If animation in GIFs should be preserved, **ImageMagick** needs to be installed as well.
 
 Installation
 ===
