@@ -1,7 +1,13 @@
 # image_resizer
-Real-time Image Processing library written in PHP. Supports operations: resize, crop, sharp, and more
+Real-time Image Processing library written in PHP. Supports operations: resize, crop, sharp, and more.
 
-Initial setup:
+Requirements
+===
+Main library being used: gd2. Resizing animated GIFs is done using ImageMagick.
+
+Setup
+===
+Copy the project (using `git clone`) and setup your webserver. Then create local config file:
 ```
 cp config.local.php.SAMPLE config.local.php
 ```
