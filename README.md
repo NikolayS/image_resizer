@@ -2,7 +2,7 @@
 Real-time Image Processing library written in PHP. Supports operations: resize, crop, sharp, and more
 
 Initial setup:
-```bash
+```
 cp config.local.php.SAMPLE config.local.php
 ```
 …and edit parameters in `config.local.php` manually.
