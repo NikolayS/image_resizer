@@ -30,6 +30,9 @@ Important: automated tests are only available when `$ALLOW_ABSOLUTE_URLS = TRUE;
 
 Cashing
 ===
+
+Server-side Caching
+---
 This library is doing run-time work which can load CPU and take significant time (especially in case of large animated GIFs). It **does not** do caching itself. To enable caching, web server (e.g., NGINX) should be configured respectively. Alternatively, additional caching software (e.g. Varnish) can be installed.
 
 WIP!
