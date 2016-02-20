@@ -36,14 +36,14 @@ try {
     }
 
     $srcParsed = parse_url($src);
-    if (@$srcParsed['host'] && !$ALLOW_ABSOLUTE_URLS) {
+    if (array_key_exists('host', $srcParsed) && $srcParsed['host'] && !$ALLOW_ABSOLUTE_URLS) {
         throw new Exception("Absolute URLs are not allowed.");
     }
-    if (!@$srcParsed['host']) {
+    if (!array_key_exists('host', $srcParsed) || !$srcParsed['host']) {
         $src =  $HOST_FOR_URIS . $src;
     }
 
-    if (!($data = file_get_contents($src))) {
+    if (!file_exists($src)) {
         header("HTTP/1.0 404 Not Found");
         exit;
     }
