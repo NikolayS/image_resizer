@@ -43,6 +43,10 @@ try {
         $src =  $HOST_FOR_URIS . $src;
     }
 
+    if (!($data = file_get_contents($src))) {
+        header("HTTP/1.0 404 Not Found");
+        return;
+    }
     $data = file_get_contents($src);
     $headers = parseHeaders($http_response_header);
     $contentType = strtolower(@$headers['content-type']);
