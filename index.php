@@ -18,9 +18,15 @@ if ($RESIZE_ANIMATED_GIF && !($_image_magick = exec("which convert"))) {
     exit;
 }
 
-set_error_handler(function ($severity, $message, $filepath, $line) {
-    throw new Exception($message . " in $filepath, line $line");
-}, E_ALL & ~E_STRICT & ~E_NOTICE);
+if ($DEBUG) {
+    set_error_handler(function ($severity, $message, $filepath, $line) {
+        throw new Exception($message . " in $filepath, line $line");
+    }, E_ALL);
+} else {
+    set_error_handler(function ($severity, $message, $filepath, $line) {
+        throw new Exception($message . " in $filepath, line $line");
+    }, E_ALL & ~E_STRICT & ~E_NOTICE & ~E_WARNING);
+}
 
 $SUPPORTED_TYPES = array(
     'image/png',
@@ -43,11 +49,12 @@ try {
         $src =  $HOST_FOR_URIS . $src;
     }
 
-    if (!file_exists($src)) {
+    $data = file_get_contents($src); // !! if the file doesn't exist, this will cause Exception in DEBUG mode, instead of 404
+    if ($data === FALSE) {
         header("HTTP/1.0 404 Not Found");
+        header("X-IMAGE-RESIZER-ERROR: Cannot read this file: $src");
         exit;
     }
-    $data = file_get_contents($src);
     $headers = parseHeaders($http_response_header);
     $contentType = strtolower(@$headers['content-type']);
 
