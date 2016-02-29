@@ -20,10 +20,18 @@ if ($RESIZE_ANIMATED_GIF && !($_image_magick = exec("which convert"))) {
 
 if ($DEBUG) {
     set_error_handler(function ($severity, $message, $filepath, $line) {
+        global $tmpFile;
+        if (isset($tmpFile)) {
+            deleteFile($tmpFile);
+        }
         throw new Exception($message . " in $filepath, line $line");
     }, E_ALL);
 } else {
     set_error_handler(function ($severity, $message, $filepath, $line) {
+        global $tmpFile;
+        if (isset($tmpFile)) {
+            deleteFile($tmpFile);
+        }
         throw new Exception($message . " in $filepath, line $line");
     }, E_ALL & ~E_STRICT & ~E_NOTICE & ~E_WARNING);
 }
@@ -139,6 +147,9 @@ try {
         echo $outImg;
     }
 } catch (Exception $e) {
+    if (isset($tmpFile)) {
+        deleteFile($tmpFile);
+    }
     header("Bad request", true, 400);
     header("X-IMAGE-RESIZER-ERROR: " . str_replace(array("\n", "\r"), array(" ", " "), $e->getMessage()));
     if ($DEBUG) echo $e->getMessage();
