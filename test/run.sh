@@ -6,7 +6,7 @@ if [ $condition -eq 0 ] ; then
     exit
 fi
 if [ "$RESIZERSERVICE" == "" ] ; then
-    >&2 echo "RESIZERSERVICE is missing (use \"export RESIZERSERVICE=https://your.copier.hostname\", w/o trailing slash)"
+    >&2 echo "RESIZERSERVICE is missing (use \"export RESIZERSERVICE=https://your.resizer.hostname\", w/o trailing slash)"
     exit
 fi
 absAllowed=$(grep ALLOW_ABSOLUTE_URLS config.local.php | awk '{print tolower($3)}' | sed 's/\/\/.*//')
