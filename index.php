@@ -180,8 +180,9 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
 
         $dim = $width.'x'.$height;
 
+        global $TMP_DIR_IMAGEMAGICK;
         putenv("MAGICK_THREAD_LIMIT=1");
-        if ($TMP_DIR_IMAGEMAGICK) {
+        if (!is_null($TMP_DIR_IMAGEMAGICK)) {
             putenv("MAGICK_TEMPORARY_PATH=$TMP_DIR_IMAGEMAGICK");
             putenv("MAGICK_TMPDIR=$TMP_DIR_IMAGEMAGICK");
         }
