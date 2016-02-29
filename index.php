@@ -83,9 +83,9 @@ try {
     if ($resize) {
         if ($contentType == 'image/gif' && $RESIZE_ANIMATED_GIF && isAnimatedGif($data)) {
             $IS_ANIMATED = 1;
-            $TMPFILE = '/var/tmp/' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 16);
-            file_put_contents($TMPFILE, $data);
-            resizeAnimatedGif($TMPFILE, $resW, $resH);
+            $tmpFile = $TMP_DIR . '/' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 16);
+            file_put_contents($tmpFile, $data);
+            resizeAnimatedGif($tmpFile, $resW, $resH);
         } else {
             $resImg = imagecreatetruecolor($resW, $resH);
             if (in_array($contentType, array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
@@ -101,7 +101,7 @@ try {
     }
 
     header("X-Content-Length-Original: " . strlen($data));
-    if ($resImg || $TMPFILE) {
+    if ($resImg || $tmpFile) {
         switch ($contentType) {
         case 'image/jpeg':
             ob_start();
@@ -119,10 +119,10 @@ try {
             ob_start();
             header("Content-Type: image/gif");
             if ($IS_ANIMATED) {
-                $ftmp = fopen($TMPFILE, 'rb');
+                $ftmp = fopen($tmpFile, 'rb');
                 fpassthru($ftmp);
                 fclose($ftmp);
-                deleteFile($TMPFILE);
+                deleteFile($tmpFile);
             } else {
                 imagegif($resImg, NULL);
             }
@@ -181,6 +181,10 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
         $dim = $width.'x'.$height;
 
         putenv("MAGICK_THREAD_LIMIT=1");
+        if ($TMP_DIR_IMAGEMAGICK) {
+            putenv("MAGICK_TEMPORARY_PATH=$TMP_DIR_IMAGEMAGICK");
+            putenv("MAGICK_TMPDIR=$TMP_DIR_IMAGEMAGICK");
+        }
         exec(escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f);
         return $f;
     }

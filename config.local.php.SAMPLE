@@ -8,4 +8,6 @@ $DEBUG = FALSE;                     // do not use TRUE on production!! It might 
 
 $ALLOW_ABSOLUTE_URLS = TRUE;       // if true, resizing of any URL is allowed, including external one
 $HOST_FOR_URIS = 'mystorage.tbd';   // if relative URL is passed to "src", use this host as a base
-$RESIZE_ANIMATED_GIF = TRUE;        // requires ImageMagick 
+$RESIZE_ANIMATED_GIF = TRUE;        // requires ImageMagick
+$TMP_DIR = '/var/tmp';              // which dir to use for tmp files (w/o trailing slash!)
+$TMP_DIR_IMAGEMAGICK = null;        // use different tmp dir for ImageMagick (set to 'null' to avoid overriding)
