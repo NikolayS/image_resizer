@@ -197,7 +197,22 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
             putenv("MAGICK_TEMPORARY_PATH=$TMP_DIR_IMAGEMAGICK");
             putenv("MAGICK_TMPDIR=$TMP_DIR_IMAGEMAGICK");
         }
-        exec(escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f);
+        $prefix = "";
+        global $CONVERT_TIMEOUT;
+        if (!is_null($CONVERT_TIMEOUT)) {
+            $prefix = "timeout -k 1 $CONVERT_TIMEOUT ";
+        }
+        exec($prefix . escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f, $output, $status);
+        if ($status > 0) { // assume that timeout occured; exit right now
+            global $tmpFile;
+            if (isset($tmpFile)) {
+                deleteFile($tmpFile);
+            }
+            header("Service Unavailable", true, 503);
+            header("X-IMAGE-RESIZER-ERROR: " . "Image convertion timeout reached ($CONVERT_TIMEOUT sec)");
+            exit;    
+        }
+        
         return $f;
     }
 }
