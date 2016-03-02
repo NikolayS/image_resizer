@@ -209,7 +209,7 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
                 deleteFile($tmpFile);
             }
             header("Service Unavailable", true, 503);
-            header("X-IMAGE-RESIZER-ERROR: " . "Image convertion timeout reached ($CONVERT_TIMEOUT sec)");
+            header("X-IMAGE-RESIZER-ERROR: " . "Image convertion timeout reached (CONVERT_TIMEOUT: $CONVERT_TIMEOUT)");
             exit;    
         }
         
