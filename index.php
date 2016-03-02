@@ -200,7 +200,7 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
         $prefix = "";
         global $CONVERT_TIMEOUT;
         if (!is_null($CONVERT_TIMEOUT)) {
-            $prefix = "timeout -k 1 $CONVERT_TIMEOUT ";
+            $prefix = "timeout $CONVERT_TIMEOUT ";
         }
         exec($prefix . escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f, $output, $status);
         if ($status > 0) { // assume that timeout occured; exit right now
