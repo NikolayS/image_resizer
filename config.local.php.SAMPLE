@@ -1,5 +1,5 @@
 <?php
-// COPY THIS TO config.php:
+// COPY THIS TO config.local.php:
 //        cp config.local.example.php config.local.php
 // 
 // ..AND EDIT IT AS YOU NEED
