@@ -4,5 +4,6 @@ Content-Type: image/gif
 Transfer-Encoding: chunked
 Connection: keep-alive
 X-Content-Length-Original: 1429302
+Access-Control-Allow-Origin: *
 Content-Lenght: 590383
 

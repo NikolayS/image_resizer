@@ -4,5 +4,6 @@ Content-Type: image/jpeg
 Transfer-Encoding: chunked
 Connection: keep-alive
 X-Content-Length-Original: 1367120
+Access-Control-Allow-Origin: *
 Content-Lenght: 14575
 
