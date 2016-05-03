@@ -109,6 +109,7 @@ try {
     }
 
     header("X-Content-Length-Original: " . strlen($data));
+    header("Access-Control-Allow-Origin: *");
     if ($resImg || $tmpFile) {
         switch ($contentType) {
         case 'image/jpeg':
