@@ -44,7 +44,7 @@ $SUPPORTED_TYPES = array(
 );
 
 try {
-    $src = @$_GET['src'];
+    $src = isset($_GET['src']) ? $_GET['src'] : null;
     if (!$src) {
         throw new Exception("Required parameter is not set: 'src'.");
     }
