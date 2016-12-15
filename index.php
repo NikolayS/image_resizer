@@ -77,12 +77,14 @@ try {
     $h = imagesy($img);
 
     $resize = null;
-    if (isset($_GET['w']) && (intval($_GET['w']) > 0)) { // resize, target: WIDTH
+    if (isset($_GET['w']) && (intval($_GET['w']) > 0) && intval($_GET['w']) != $w) { // resize, target: WIDTH
         $resW = intval($_GET['w']);
         $resH = round($resW * $h / $w);
         $resize = true;
     }
-    if (isset($_GET['h']) && (intval($_GET['h']) > 0) && (!isset($resH) || (intval($_GET['h']) < $resH))) { // resize, target: HEIGHT.
+    if (isset($_GET['h']) && (intval($_GET['h']) > 0) 
+                          && (!isset($resH) || (intval($_GET['h']) < $resH))
+                          && intval($_GET['h']) != $h) { // resize, target: HEIGHT.
         $resH = intval($_GET['h']);
         $resW = round($resH * $w / $h);
         $resize = true;
