@@ -3,13 +3,7 @@
 // IMAGE RESIZER
 //
 
-define("START_TIME", microtime(true));
-
-function logTime($message) {
-    if ($DEBUG) {
-        trigger_error($message . ". Duration from start (" . START_TIME . ") is " . (microtime(true) - START_TIME));
-    }
-}
+$start = microtime();
 
 if (file_exists("config.local.php")) {
     require_once("config.local.php");
@@ -260,5 +254,17 @@ function deleteFile($filename)
 {
     if (file_exists($filename)) {
         unlink($filename);
+    }
+}
+
+function logTime($message) {
+    global $DEBUG;
+    global $LOG_DIR;
+    global $start;
+    if ($DEBUG && isset($LOG_DIR)) {
+        $msg = $message . ". Duration from start is " . (microtime() - $start) . ' msec.';
+        if (is_writable($LOG_DIR)) {
+            file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] $msg \n", FILE_APPEND);
+        }
     }
 }
