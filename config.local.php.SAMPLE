@@ -12,3 +12,4 @@ $RESIZE_ANIMATED_GIF = TRUE;        // requires ImageMagick
 $TMP_DIR = '/var/tmp';              // which dir to use for tmp files (w/o trailing slash!)
 $TMP_DIR_IMAGEMAGICK = null;        // use different tmp dir for ImageMagick (set to 'null' to avoid overriding)
 $CONVERT_TIMEOUT = null;            // if not null, let "convert" (imagemagick) work no more than this amount (use '20s' means 20 seconds)
+$ALLOWED_WIDTHS = [230, 560];       // Allowed target widths

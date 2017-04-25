@@ -8,10 +8,9 @@ $start = microtime(true);
 function logTime($message) {
     if ($DEBUG) {
         $now = microtime(true);
-        trigger_error($message . " Duration from start: " . ($now - $start));
+        trigger_error($message . " Duration from start (" . $start . ") is " . ($now - $start));
     }
 }
-
 
 if (file_exists("config.local.php")) {
     require_once("config.local.php");
@@ -27,7 +26,6 @@ if ($RESIZE_ANIMATED_GIF && !($_image_magick = exec("which convert"))) {
     trigger_error("ImageMagic is not loaded, and RESIZE_ANIMATED_GIF is set to TRUE", E_USER_WARNING);
     exit;
 }
-
 
 if ($DEBUG) {
     set_error_handler(function ($severity, $message, $filepath, $line) {
@@ -54,9 +52,14 @@ $SUPPORTED_TYPES = array(
     'image/gif',
 );
 
-
 logTime("Start parse params at line " . __LINE__ );
 try {
+    if (isset($_GET['w'])) {
+        if (! in_array(intval($_GET['w']), $ALLOWED_WIDTHS)) {
+            throw new Exception("Width is not supported.");
+        }
+    }
+
     $src = isset($_GET['src']) ? $_GET['src'] : null;
     if (!$src) {
         throw new Exception("Required parameter is not set: 'src'.");
@@ -96,6 +99,7 @@ try {
         $resH = round($resW * $h / $w);
         $resize = true;
     }
+    
     if (isset($_GET['h']) && (intval($_GET['h']) > 0) 
                           && (!isset($resH) || (intval($_GET['h']) < $resH))
                           && intval($_GET['h']) != $h) { // resize, target: HEIGHT.
