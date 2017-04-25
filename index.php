@@ -48,10 +48,10 @@ try {
     if (!$src) {
         throw new Exception("Required parameter is not set: 'src'.");
     }
-    
+
     if (isset($_GET['w']) && is_array($ALLOWED_WIDTHS) && ! in_array(intval($_GET['w']), $ALLOWED_WIDTHS)) {
-        throw new Exception("Width is not supported.");
-    }    
+        throw new Exception("Target width {$_GET['w']} is not allowed.");
+    }
 
     $srcParsed = parse_url($src);
     if (array_key_exists('host', $srcParsed) && $srcParsed['host'] && !$ALLOW_ABSOLUTE_URLS) {
