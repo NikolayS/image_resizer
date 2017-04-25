@@ -3,6 +3,8 @@
 // IMAGE RESIZER
 //
 
+$start = microtime();
+
 if (file_exists("config.local.php")) {
     require_once("config.local.php");
 } else {
@@ -43,6 +45,7 @@ $SUPPORTED_TYPES = array(
     'image/gif',
 );
 
+logTime("Start parse params at line " . __LINE__ );
 try {
     $src = isset($_GET['src']) ? $_GET['src'] : null;
     if (!$src) {
@@ -56,7 +59,7 @@ try {
     if (!array_key_exists('host', $srcParsed) || !$srcParsed['host']) {
         $src =  $HOST_FOR_URIS . $src;
     }
-
+    logTime("Start file_get_contents at line " . __LINE__ );
     $data = file_get_contents($src); // !! if the file doesn't exist, this will cause Exception in DEBUG mode, instead of 404
     if ($data === FALSE) {
         header("HTTP/1.0 404 Not Found");
@@ -72,6 +75,7 @@ try {
 
     $resImg = null;
 
+    logTime("Start imagecreatefromstring at line " . __LINE__ );
     $img = imagecreatefromstring($data);
     $w = imagesx($img);
     $h = imagesy($img);
@@ -82,6 +86,7 @@ try {
         $resH = round($resW * $h / $w);
         $resize = true;
     }
+
     if (isset($_GET['h']) && (intval($_GET['h']) > 0) 
                           && (!isset($resH) || (intval($_GET['h']) < $resH))
                           && intval($_GET['h']) != $h) { // resize, target: HEIGHT.
@@ -94,22 +99,31 @@ try {
         if ($contentType == 'image/gif' && $RESIZE_ANIMATED_GIF && isAnimatedGif($data)) {
             $IS_ANIMATED = 1;
             $tmpFile = $TMP_DIR . '/' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 16);
+            logTime("Start file_get_contents at line " . __LINE__ );
             file_put_contents($tmpFile, $data);
+            logTime("Start resizeAnimatedGif at line " . __LINE__ );
             resizeAnimatedGif($tmpFile, $resW, $resH);
         } else {
+            logTime("Start imagecreatetruecolor at line " . __LINE__ );
             $resImg = imagecreatetruecolor($resW, $resH);
             if (in_array($contentType, array('image/png', 'image/gif'))) { // tricks to preserve transparency of GIF/PNG
+                logTime("Start imagealphablending at line " . __LINE__ );
                 imagealphablending($resImg, false);
+                logTime("Start imagesavealpha at line " . __LINE__ );
                 imagesavealpha($resImg, true);
+                logTime("Start imagecolorallocatealpha at line " . __LINE__ );
                 $transparent = imagecolorallocatealpha($resImg, 255, 255, 255, 1);
+                logTime("Start imagefilledrectangle at line " . __LINE__ );
                 imagefilledrectangle($resImg, 0, 0, $resW, $resH, $transparent);
             }
+            logTime("Start imagecopyresampled at line " . __LINE__ );
             imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
         }
     } else {
         $resImg = $img;
     }
 
+    logTime("Start prepare output at line " . __LINE__ );
     header("X-Content-Length-Original: " . strlen($data));
     header("Access-Control-Allow-Origin: *");
     if ($resImg || $tmpFile) {
@@ -158,6 +172,7 @@ try {
     if ($DEBUG) echo $e->getMessage();
     exit;
 }
+logTime("Stop at line " . __LINE__ );
 
 function parseHeaders($headers, $lowerNames = true)
 {
@@ -205,7 +220,9 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
         if (!is_null($CONVERT_TIMEOUT)) {
             $prefix = "timeout $CONVERT_TIMEOUT ";
         }
+        logTime("Start ImageMagick call at line " . __LINE__ );
         exec($prefix . escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f, $output, $status);
+        logTime("Done ImageMagick call at line " . __LINE__ );
         if ($status > 0) { // assume that timeout occured; exit right now
             global $tmpFile;
             if (isset($tmpFile)) {
@@ -237,5 +254,17 @@ function deleteFile($filename)
 {
     if (file_exists($filename)) {
         unlink($filename);
+    }
+}
+
+function logTime($message) {
+    global $DEBUG;
+    global $LOG_DIR;
+    global $start;
+    if ($DEBUG && isset($LOG_DIR)) {
+        $msg = $message . ". Duration from start is " . (microtime() - $start) . ' msec.';
+        if (is_writable($LOG_DIR)) {
+            file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] $msg \n", FILE_APPEND);
+        }
     }
 }
