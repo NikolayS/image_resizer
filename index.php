@@ -53,12 +53,6 @@ $SUPPORTED_TYPES = array(
 
 logTime("Start parse params at line " . __LINE__ );
 try {
-    if (isset($_GET['w'])) {
-        if (! in_array(intval($_GET['w']), $ALLOWED_WIDTHS)) {
-            throw new Exception("Width is not supported.");
-        }
-    }
-
     $src = isset($_GET['src']) ? $_GET['src'] : null;
     if (!$src) {
         throw new Exception("Required parameter is not set: 'src'.");
