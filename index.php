@@ -49,7 +49,7 @@ try {
         throw new Exception("Required parameter is not set: 'src'.");
     }
 
-    if (isset($_GET['w']) && is_array($ALLOWED_WIDTHS) && ! in_array(intval($_GET['w']), $ALLOWED_WIDTHS)) {
+    if (isset($_GET['w']) && isset($ALLOWED_WIDTHS) && is_array($ALLOWED_WIDTHS) && ! in_array(intval($_GET['w']), $ALLOWED_WIDTHS)) {
         throw new Exception("Target width {$_GET['w']} is not allowed.");
     }
 
