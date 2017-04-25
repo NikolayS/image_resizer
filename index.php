@@ -3,12 +3,11 @@
 // IMAGE RESIZER
 //
 
-$start = microtime(true);
+define("START_TIME", microtime(true));
 
 function logTime($message) {
     if ($DEBUG) {
-        $now = microtime(true);
-        trigger_error($message . " Duration from start (" . $start . ") is " . ($now - $start));
+        trigger_error($message . ". Duration from start (" . START_TIME . ") is " . (microtime(true) - START_TIME));
     }
 }
 
@@ -99,7 +98,7 @@ try {
         $resH = round($resW * $h / $w);
         $resize = true;
     }
-    
+
     if (isset($_GET['h']) && (intval($_GET['h']) > 0) 
                           && (!isset($resH) || (intval($_GET['h']) < $resH))
                           && intval($_GET['h']) != $h) { // resize, target: HEIGHT.
