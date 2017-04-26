@@ -3,20 +3,22 @@
 // IMAGE RESIZER
 //
 
-$start = microtime();
-
 if (file_exists("config.local.php")) {
     require_once("config.local.php");
 } else {
     trigger_error("Config is missing", E_USER_ERROR); 
 }
 
+logTime("Start at line " . __LINE__ );
+
 if (!extension_loaded('gd') && !extension_loaded('gd2')) {
     trigger_error("GD is not loaded", E_USER_WARNING);
+    logTime("Stop at line " . __LINE__ );
     exit;
 }
 if ($RESIZE_ANIMATED_GIF && !($_image_magick = exec("which convert"))) {
     trigger_error("ImageMagic is not loaded, and RESIZE_ANIMATED_GIF is set to TRUE", E_USER_WARNING);
+    logTime("Stop at line " . __LINE__ );
     exit;
 }
 
@@ -68,6 +70,7 @@ try {
     if ($data === FALSE) {
         header("HTTP/1.0 404 Not Found");
         header("X-IMAGE-RESIZER-ERROR: Cannot read this file: $src");
+        logTime("Stop at line " . __LINE__ );
         exit;
     }
     $headers = parseHeaders($http_response_header);
@@ -162,6 +165,7 @@ try {
             header("X-IMAGE-RESIZER-ERROR: $err");
             header($err, true, 501);
             unset($err);
+            logTime("Stop at line " . __LINE__ );
             exit;
         }
         header("Content-Lenght: " . strlen($outImg));
@@ -174,6 +178,7 @@ try {
     header("Bad request", true, 400);
     header("X-IMAGE-RESIZER-ERROR: " . str_replace(array("\n", "\r"), array(" ", " "), $e->getMessage()));
     if ($DEBUG) echo $e->getMessage();
+    logTime("Stop at line " . __LINE__ );
     exit;
 }
 logTime("Stop at line " . __LINE__ );
@@ -234,6 +239,7 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
             }
             header("Service Unavailable", true, 503);
             header("X-IMAGE-RESIZER-ERROR: " . "Image convertion timeout reached (CONVERT_TIMEOUT: $CONVERT_TIMEOUT)");
+            logTime("Stop at line " . __LINE__ );
             exit;    
         }
         
@@ -262,13 +268,11 @@ function deleteFile($filename)
 }
 
 function logTime($message) {
-    global $DEBUG;
     global $LOG_DIR;
-    global $start;
-    if ($DEBUG && isset($LOG_DIR)) {
-        $msg = $message . ". Duration from start is " . (microtime() - $start) . ' msec.';
+    global $TIME_DEBUG;
+    if ($TIME_DEBUG && isset($LOG_DIR)) { 
         if (is_writable($LOG_DIR)) {
-            file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] $msg \n", FILE_APPEND);
+            file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] " . microtime(true) . " " . $message . "\n", FILE_APPEND);
         }
     }
 }
