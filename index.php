@@ -275,7 +275,7 @@ function logTime($message) {
     global $start;
     if ($TIME_DEBUG && isset($LOG_DIR)) { 
         if (is_writable($LOG_DIR)) {
-            file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] Duration from start: " . (microtime(true) - $start) . " \t" . $message . "\n", FILE_APPEND);
+            file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] Duration from start: " . (round(microtime(true) - $start, 4)) . " \t" . $message . "\n", FILE_APPEND);
         }
     }
 }
