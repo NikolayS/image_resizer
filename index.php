@@ -51,6 +51,9 @@ $SUPPORTED_TYPES = array(
 
 logTime("Start parse params at line " . __LINE__ );
 try {
+    if (is_writable($TMP_DIR)) {
+        throw new Exception("Directory $TMP_DIR does not exist or is not writable.");
+    }
     $src = isset($_GET['src']) ? $_GET['src'] : null;
     if (!$src) {
         throw new Exception("Required parameter is not set: 'src'.");
