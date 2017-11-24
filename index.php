@@ -11,6 +11,10 @@ if (file_exists("config.local.php")) {
     trigger_error("Config is missing", E_USER_ERROR); 
 }
 
+if (!is_writable($TMP_DIR)) {
+    trigger_error("Directory $TMP_DIR does not exist or is not writable.", E_USER_ERROR);
+}
+
 logTime("Start at line " . __LINE__ );
 
 if (!extension_loaded('gd') && !extension_loaded('gd2')) {
@@ -51,9 +55,6 @@ $SUPPORTED_TYPES = array(
 
 logTime("Start parse params at line " . __LINE__ );
 try {
-    if (is_writable($TMP_DIR)) {
-        throw new Exception("Directory $TMP_DIR does not exist or is not writable.");
-    }
     $src = isset($_GET['src']) ? $_GET['src'] : null;
     if (!$src) {
         throw new Exception("Required parameter is not set: 'src'.");
