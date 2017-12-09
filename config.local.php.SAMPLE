@@ -15,3 +15,4 @@ $LOG_DIR = null;                    // which dir to user for log files in debug 
 $TMP_DIR_IMAGEMAGICK = null;        // use different tmp dir for ImageMagick (set to 'null' to avoid overriding)
 $CONVERT_TIMEOUT = null;            // if not null, let "convert" (imagemagick) work no more than this amount (use '20s' means 20 seconds)
 $ALLOWED_WIDTHS = null;             // Allowed target widths as array [230, 560]
+$USE_HTTP_FOR_PREFIX = '/data/';      // if set, when $src start with this value, HTTP request will be used (using "GET $src" with "Host: cur_host")

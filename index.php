@@ -18,14 +18,12 @@ if (!is_writable($TMP_DIR)) {
 logTime("Start at line " . __LINE__ );
 
 if (!extension_loaded('gd') && !extension_loaded('gd2')) {
-    trigger_error("GD is not loaded", E_USER_WARNING);
     logTime("Stop at line " . __LINE__ );
-    exit;
+    trigger_error("GD is not loaded", E_USER_WARNING);
 }
 if ($RESIZE_ANIMATED_GIF && !($_image_magick = exec("which convert"))) {
-    trigger_error("ImageMagic is not loaded, and RESIZE_ANIMATED_GIF is set to TRUE", E_USER_WARNING);
     logTime("Stop at line " . __LINE__ );
-    exit;
+    trigger_error("ImageMagic is not loaded, and RESIZE_ANIMATED_GIF is set to TRUE", E_USER_WARNING);
 }
 
 if ($DEBUG) {
@@ -246,9 +244,9 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
             header("Service Unavailable", true, 503);
             header("X-IMAGE-RESIZER-ERROR: " . "Image convertion timeout reached (CONVERT_TIMEOUT: $CONVERT_TIMEOUT)");
             logTime("Stop at line " . __LINE__ );
-            exit;    
+            exit;
         }
-        
+
         return $f;
     }
 }
@@ -277,7 +275,7 @@ function logTime($message) {
     global $LOG_DIR;
     global $TIME_DEBUG;
     global $start;
-    if ($TIME_DEBUG && isset($LOG_DIR)) { 
+    if ($TIME_DEBUG && isset($LOG_DIR)) {
         if (is_writable($LOG_DIR)) {
             file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] Duration from start: " . (round(microtime(true) - $start, 4)) . " \t" . $message . "\n", FILE_APPEND);
         }
