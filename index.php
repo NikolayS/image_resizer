@@ -231,9 +231,15 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
             putenv("MAGICK_TMPDIR=$TMP_DIR_IMAGEMAGICK");
         }
         $prefix = "";
-        global $CONVERT_TIMEOUT;
+        global $CONVERT_TIMEOUT, $CONVERT_LIMIT_MEMORY, $CONVERT_LIMIT_MAP;
         if (!is_null($CONVERT_TIMEOUT)) {
             $prefix = "timeout $CONVERT_TIMEOUT ";
+        }
+        if (isset($CONVERT_LIMIT_MEMORY)) {
+            $_image_magick .= " -limit memory $CONVERT_LIMIT_MEMORY";
+        }
+        if (isset($CONVERT_LIMIT_MAP)) {
+            $_image_magick .= " -limit map $CONVERT_LIMIT_MAP";
         }
         logTime("Start ImageMagick call at line " . __LINE__ );
         exec($prefix . escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f, $output, $status);
