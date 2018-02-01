@@ -231,7 +231,7 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
             putenv("MAGICK_TMPDIR=$TMP_DIR_IMAGEMAGICK");
         }
         $prefix = "";
-        global $CONVERT_TIMEOUT, $CONVERT_LIMIT_MEMORY, $CONVERT_LIMIT_MAP;
+        global $CONVERT_TIMEOUT, $CONVERT_LIMITS;
         if (!is_null($CONVERT_TIMEOUT)) {
             $prefix = "timeout $CONVERT_TIMEOUT ";
         }
