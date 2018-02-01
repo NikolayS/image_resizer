@@ -235,9 +235,11 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
         if (!is_null($CONVERT_TIMEOUT)) {
             $prefix = "timeout $CONVERT_TIMEOUT ";
         }
-        if (!is_null($CONVERT_LIMIT)) {
-            foreach ($CONVERT_LIMIT as $limit_k => $limit_v) {
-                $_image_magick .= " -limit $limit_k $limit_v";
+        if (!is_null($CONVERT_LIMITS)) {
+            foreach ($CONVERT_LIMITS as $limit_k => $limit_v) {
+                if (!is_null($limit_v)) {
+                    $_image_magick .= " -limit $limit_k $limit_v";
+                }
             }
         }
         logTime("Start ImageMagick call at line " . __LINE__ );
