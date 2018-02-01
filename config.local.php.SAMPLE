@@ -14,4 +14,7 @@ $TMP_DIR = '/var/tmp';              // which dir to use for tmp files (w/o trail
 $LOG_DIR = null;                    // which dir to user for log files in debug mode
 $TMP_DIR_IMAGEMAGICK = null;        // use different tmp dir for ImageMagick (set to 'null' to avoid overriding)
 $CONVERT_TIMEOUT = null;            // if not null, let "convert" (imagemagick) work no more than this amount (use '20s' means 20 seconds)
+$CONVERT_LIMIT_MEMORY = '32MiB';    // imagemagick memory limit, see https://www.imagemagick.org/discourse-server/viewtopic.php?t=10885
+$CONVERT_LIMIT_MAP = '64MiB';       // imagemagick memory limit, see https://www.imagemagick.org/discourse-server/viewtopic.php?t=10885
+$CONVERT_LIMIT_TIME = null;         // (alternative to $CONVERT_TIMEOUT) imagemagick time limit, see https://www.imagemagick.org/discourse-server/viewtopic.php?t=10885
 $ALLOWED_WIDTHS = null;             // Allowed target widths as array [230, 560]
