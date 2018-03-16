@@ -1,5 +1,5 @@
 # image_resizer
-Real-time Image Processing library written in PHP. Resizes images on-the-fly, then you can cache them in NGINX or smth. Animated GIFs are supported.
+Real-time Image Processing library written in PHP. Resizes images on-the-fly, then you can cache them in NGINX or smth. Animated GIFs are also supported.
 
 Requirements
 ===
