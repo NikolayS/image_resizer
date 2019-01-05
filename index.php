@@ -1,5 +1,5 @@
 <?php
-// 
+//
 // IMAGE RESIZER
 //
 
@@ -8,7 +8,7 @@ $start = microtime(true);
 if (file_exists("config.local.php")) {
     require_once("config.local.php");
 } else {
-    trigger_error("Config is missing", E_USER_ERROR); 
+    trigger_error("Config is missing", E_USER_ERROR);
 }
 
 if (!is_writable($TMP_DIR)) {
@@ -78,6 +78,11 @@ try {
         exit;
     }
     $headers = parseHeaders($http_response_header);
+    if ($headers["content-length"] > $MAX_CONTENT_LENGTH) { // 16 MiB is the absolute maximum for image size
+        header('HTTP/1.1 413 Payload Too Large', true, 413);
+        header("X-IMAGE-RESIZER-ERROR: Payload Too Large, size: {$headers['content-length']}");
+        exit;
+    }
     $contentType = strtolower(@$headers['content-type']);
 
     if (!$contentType || !in_array($contentType, $SUPPORTED_TYPES)) {
@@ -229,9 +234,16 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
             putenv("MAGICK_TMPDIR=$TMP_DIR_IMAGEMAGICK");
         }
         $prefix = "";
-        global $CONVERT_TIMEOUT;
+        global $CONVERT_TIMEOUT, $CONVERT_LIMITS;
         if (!is_null($CONVERT_TIMEOUT)) {
             $prefix = "timeout $CONVERT_TIMEOUT ";
+        }
+        if (!is_null($CONVERT_LIMITS)) {
+            foreach ($CONVERT_LIMITS as $limit_k => $limit_v) {
+                if (!is_null($limit_v)) {
+                    $_image_magick .= " -limit $limit_k $limit_v";
+                }
+            }
         }
         logTime("Start ImageMagick call at line " . __LINE__ );
         exec($prefix . escapeshellcmd($_image_magick) . ' ' . $f . ' -coalesce -strip -resize ' . $dim . ' ' . $f, $output, $status);

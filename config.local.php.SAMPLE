@@ -1,7 +1,7 @@
 <?php
 // COPY THIS TO config.local.php:
 //        cp config.local.example.php config.local.php
-// 
+//
 // ..AND EDIT IT AS YOU NEED
 
 $DEBUG = FALSE;                     // do not use TRUE on production!! It might expose show error details to the world
@@ -15,4 +15,8 @@ $LOG_DIR = null;                    // which dir to user for log files in debug 
 $TMP_DIR_IMAGEMAGICK = null;        // use different tmp dir for ImageMagick (set to 'null' to avoid overriding)
 $CONVERT_TIMEOUT = null;            // if not null, let "convert" (imagemagick) work no more than this amount (use '20s' means 20 seconds)
 $ALLOWED_WIDTHS = null;             // Allowed target widths as array [230, 560]
-$USE_HTTP_FOR_PREFIX = '/data/';      // if set, when $src start with this value, HTTP request will be used (using "GET $src" with "Host: cur_host")
+$CONVERT_LIMITS = [                 // imagemagick limits, see https://www.imagemagick.org/discourse-server/viewtopic.php?t=10885
+  'memory' => '32MiB ',
+  'map' => '64MiB',
+];
+$MAX_CONTENT_LENGTH = 16 * 1024 * 1024; // 16 MiB
