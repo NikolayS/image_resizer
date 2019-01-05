@@ -80,6 +80,11 @@ try {
         exit;
     }
     $headers = parseHeaders($http_response_header);
+    if ($headers["content-length"] > 16 * 1024 * 1024) { // 16 MiB is the absolute maximum for image size
+        header('HTTP/1.1 413 Payload Too Large', true, 413);
+        header("X-IMAGE-RESIZER-ERROR: Payload Too Large, size: {$headers['content-length']}");
+        exit;
+    }
     $contentType = strtolower(@$headers['content-type']);
 
     if (!$contentType || !in_array($contentType, $SUPPORTED_TYPES)) {
