@@ -18,14 +18,12 @@ if (!is_writable($TMP_DIR)) {
 logTime("Start at line " . __LINE__ );
 
 if (!extension_loaded('gd') && !extension_loaded('gd2')) {
-    trigger_error("GD is not loaded", E_USER_WARNING);
     logTime("Stop at line " . __LINE__ );
-    exit;
+    trigger_error("GD is not loaded", E_USER_WARNING);
 }
 if ($RESIZE_ANIMATED_GIF && !($_image_magick = exec("which convert"))) {
-    trigger_error("ImageMagic is not loaded, and RESIZE_ANIMATED_GIF is set to TRUE", E_USER_WARNING);
     logTime("Stop at line " . __LINE__ );
-    exit;
+    trigger_error("ImageMagic is not loaded, and RESIZE_ANIMATED_GIF is set to TRUE", E_USER_WARNING);
 }
 
 if ($DEBUG) {
