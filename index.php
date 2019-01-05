@@ -1,5 +1,5 @@
 <?php
-// 
+//
 // IMAGE RESIZER
 //
 
@@ -8,7 +8,7 @@ $start = microtime(true);
 if (file_exists("config.local.php")) {
     require_once("config.local.php");
 } else {
-    trigger_error("Config is missing", E_USER_ERROR); 
+    trigger_error("Config is missing", E_USER_ERROR);
 }
 
 if (!is_writable($TMP_DIR)) {
@@ -78,7 +78,7 @@ try {
         exit;
     }
     $headers = parseHeaders($http_response_header);
-    if ($headers["content-length"] > 16 * 1024 * 1024) { // 16 MiB is the absolute maximum for image size
+    if ($headers["content-length"] > $MAX_CONTENT_LENGTH) { // 16 MiB is the absolute maximum for image size
         header('HTTP/1.1 413 Payload Too Large', true, 413);
         header("X-IMAGE-RESIZER-ERROR: Payload Too Large, size: {$headers['content-length']}");
         exit;
@@ -256,9 +256,9 @@ function resizeAnimatedGif($f, $width, $height, $master = NULL)
             header("Service Unavailable", true, 503);
             header("X-IMAGE-RESIZER-ERROR: " . "Image convertion timeout reached (CONVERT_TIMEOUT: $CONVERT_TIMEOUT)");
             logTime("Stop at line " . __LINE__ );
-            exit;    
+            exit;
         }
-        
+
         return $f;
     }
 }
@@ -287,7 +287,7 @@ function logTime($message) {
     global $LOG_DIR;
     global $TIME_DEBUG;
     global $start;
-    if ($TIME_DEBUG && isset($LOG_DIR)) { 
+    if ($TIME_DEBUG && isset($LOG_DIR)) {
         if (is_writable($LOG_DIR)) {
             file_put_contents("$LOG_DIR/image_resizer_time.log", date("c") . " [" . posix_getpid() . "] Duration from start: " . (round(microtime(true) - $start, 4)) . " \t" . $message . "\n", FILE_APPEND);
         }
