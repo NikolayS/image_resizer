@@ -1,7 +1,7 @@
 <?php
 // COPY THIS TO config.local.php:
 //        cp config.local.example.php config.local.php
-// 
+//
 // ..AND EDIT IT AS YOU NEED
 
 $DEBUG = FALSE;                     // do not use TRUE on production!! It might expose show error details to the world
@@ -19,3 +19,4 @@ $CONVERT_LIMITS = [                 // imagemagick limits, see https://www.image
   'memory' => '32MiB ',
   'map' => '64MiB',
 ];
+$MAX_CONTENT_LENGTH = 16 * 1024 * 1024; // 16 MiB
