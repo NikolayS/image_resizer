@@ -136,7 +136,13 @@ try {
             imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
         }
     } else {
-        $resImg = $img;
+        if ($contentType == 'image/gif' && $RESIZE_ANIMATED_GIF && isAnimatedGif($data)) {
+            $IS_ANIMATED = 1;
+            $tmpFile = $TMP_DIR . '/' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 16);
+            file_put_contents($tmpFile, $data);
+        } else {
+            $resImg = $img;
+        }
     }
 
     logTime("Start prepare output at line " . __LINE__ );
