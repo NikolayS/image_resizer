@@ -63,7 +63,7 @@ try {
     }
 
     if (isset($_GET['w']) && isset($MAX_ALLOWED_WIDTH) && $_GET['w'] > $MAX_ALLOWED_WIDTH) {
-        throw new Exception("Target width {$_GET['w']} is too much.");
+        throw new Exception("Target width {$_GET['w']} exceeds the limit.");
     }
 
     $srcParsed = parse_url($src);
