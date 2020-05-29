@@ -62,6 +62,10 @@ try {
         throw new Exception("Target width {$_GET['w']} is not allowed.");
     }
 
+    if (isset($_GET['w']) && isset($MAX_ALLOWED_WIDTH) && $_GET['w'] > $MAX_ALLOWED_WIDTH) {
+        throw new Exception("Target width {$_GET['w']} exceeds the limit.");
+    }
+
     $srcParsed = parse_url($src);
     if (array_key_exists('host', $srcParsed) && $srcParsed['host'] && !$ALLOW_ABSOLUTE_URLS) {
         throw new Exception("Absolute URLs are not allowed.");
