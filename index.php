@@ -62,6 +62,10 @@ try {
         throw new Exception("Target width {$_GET['w']} is not allowed.");
     }
 
+    if (isset($_GET['w']) && isset($MAX_ALLOWED_WIDTH) && $_GET['w'] > $MAX_ALLOWED_WIDTH) {
+        throw new Exception("Target width {$_GET['w']} exceeds the limit.");
+    }
+
     $srcParsed = parse_url($src);
     if (array_key_exists('host', $srcParsed) && $srcParsed['host'] && !$ALLOW_ABSOLUTE_URLS) {
         throw new Exception("Absolute URLs are not allowed.");
@@ -136,7 +140,13 @@ try {
             imagecopyresampled($resImg, $img, 0, 0, 0, 0, $resW, $resH, $w, $h);
         }
     } else {
-        $resImg = $img;
+        if ($contentType == 'image/gif' && $RESIZE_ANIMATED_GIF && isAnimatedGif($data)) {
+            $IS_ANIMATED = 1;
+            $tmpFile = $TMP_DIR . '/' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 16);
+            file_put_contents($tmpFile, $data);
+        } else {
+            $resImg = $img;
+        }
     }
 
     logTime("Start prepare output at line " . __LINE__ );
